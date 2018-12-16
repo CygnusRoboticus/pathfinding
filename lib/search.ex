@@ -4,6 +4,7 @@ defmodule Pathfinding.Search do
   """
 
   alias Pathfinding.{
+    Coord,
     Node,
     Search
   }
@@ -56,8 +57,20 @@ defmodule Pathfinding.Search do
     Heap.size(heap)
   end
 
-  def update(%Search{heap: heap} = search, _node) do
+  def update(%Search{heap: _heap} = search, _node) do
     search
+  end
+
+  def traversed_nodes(%Search{cache: cache} = search) do
+    cache
+    |> Map.values()
+    |> Enum.reduce([], fn(map, collection) ->
+      collection ++ Map.values(map)
+    end)
+    |> Enum.map(fn(node) ->
+      %Coord{x: node.x, y: node.y}
+    end)
+    |> Enum.reverse()
   end
 
   def cache(%Search{cache: cache} = search, %{x: x, y: y} = node) do

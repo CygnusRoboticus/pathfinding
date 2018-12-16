@@ -4,7 +4,6 @@ defmodule Pathfinding do
   """
 
   alias Pathfinding.{
-    Coord,
     Grid,
     Node,
     Search
@@ -28,16 +27,10 @@ defmodule Pathfinding do
         case Search.pop(search) do
           {nil, _} -> nil
           {node, _} ->
-            format_collection([node], node)
-            |> Enum.map(fn(node) ->
-              %Coord{x: node.x, y: node.y}
-            end)
+            node
+            |> Node.format_path()
         end
       end
-  end
-  defp format_collection(collection, %{parent: nil}), do: collection
-  defp format_collection(collection, %{parent: parent}) do
-    format_collection([parent | collection], parent)
   end
 
   def find_reachable(
@@ -55,15 +48,8 @@ defmodule Pathfinding do
       |> Search.push(start_node)
       |> Pathfinding.calculate(grid)
 
-    search.cache
-    |> Map.values()
-    |> Enum.reduce([], fn(map, collection) ->
-      collection ++ Map.values(map)
-    end)
-    |> Enum.map(fn(node) ->
-      %Coord{x: node.x, y: node.y}
-    end)
-    |> Enum.reverse()
+    search
+    |> Search.traversed_nodes()
   end
 
   def calculate(%Search{} = search, %Grid{} = grid) do
@@ -101,13 +87,6 @@ defmodule Pathfinding do
     end_x == x && end_y == y
   end
 
-  def get_coord_cost(%Grid{} = grid, x, y) do
-    case Grid.get_extra_cost(grid, x, y) do
-      nil -> Grid.get_tile_cost(grid, x, y)
-      extra_cost -> extra_cost
-    end
-  end
-
   def check_adjacent_node(
     %Search{} = search,
     %Grid{} = grid,
@@ -117,7 +96,7 @@ defmodule Pathfinding do
   ) do
     adjacent_x = source_node.x + x
     adjacent_y = source_node.y + y
-    adjacent_cost = Pathfinding.get_coord_cost(grid, adjacent_x, adjacent_y)
+    adjacent_cost = Grid.get_coord_cost(grid, adjacent_x, adjacent_y)
 
     case (
       Grid.is_coord_walkable(grid, adjacent_x, adjacent_y) &&
