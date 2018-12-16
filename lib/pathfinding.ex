@@ -4,7 +4,6 @@ defmodule Pathfinding do
   """
 
   alias Pathfinding.{
-    Coord,
     Grid,
     Node,
     Search
@@ -52,7 +51,7 @@ defmodule Pathfinding do
     search
     |> Search.traversed_nodes()
     |> Enum.filter(&(Grid.is_coord_stoppable(grid, &1.x, &1.y)))
-    |> Enum.map(&(%Coord{x: &1.x, y: &1.y}))
+    |> Enum.map(&(%{x: &1.x, y: &1.y}))
   end
 
   def calculate(%Search{} = search, %Grid{} = grid) do

@@ -4,7 +4,6 @@ defmodule Pathfinding.Node do
   """
 
   alias Pathfinding.{
-    Coord,
     Node
   }
 
@@ -18,7 +17,7 @@ defmodule Pathfinding.Node do
   def format_path(%Node{} = node) do
     format_collection([node], node)
     |> Enum.map(fn(node) ->
-      %Coord{x: node.x, y: node.y}
+      %{x: node.x, y: node.y}
     end)
   end
   defp format_collection(collection, %{parent: nil}), do: collection

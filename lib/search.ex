@@ -4,7 +4,6 @@ defmodule Pathfinding.Search do
   """
 
   alias Pathfinding.{
-    Coord,
     Node,
     Search
   }
