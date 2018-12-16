@@ -61,14 +61,11 @@ defmodule Pathfinding.Search do
     search
   end
 
-  def traversed_nodes(%Search{cache: cache} = search) do
+  def traversed_nodes(%Search{cache: cache}) do
     cache
     |> Map.values()
     |> Enum.reduce([], fn(map, collection) ->
       collection ++ Map.values(map)
-    end)
-    |> Enum.map(fn(node) ->
-      %Coord{x: node.x, y: node.y}
     end)
     |> Enum.reverse()
   end

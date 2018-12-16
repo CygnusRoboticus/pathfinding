@@ -105,6 +105,40 @@ defmodule PathfindingTest do
       assert is_nil(path)
     end
 
+    test "returns null when target is unwalkable" do
+      grid = %Grid{
+        tiles: [
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1]
+        ],
+        walkable_tiles: [1]
+      }
+      |> Grid.add_unwalkable_coord(4, 2)
+
+      path = Pathfinding.find_path(grid, 0, 2, 4, 2)
+      assert is_nil(path)
+    end
+
+    test "returns null when target is unstoppable" do
+      grid = %Grid{
+        tiles: [
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1]
+        ],
+        walkable_tiles: [1]
+      }
+      |> Grid.add_unstoppable_coord(4, 2)
+
+      path = Pathfinding.find_path(grid, 0, 2, 4, 2)
+      assert is_nil(path)
+    end
+
     test "prefers straight paths" do
       grid = %Grid{
         tiles: [
@@ -245,6 +279,33 @@ defmodule PathfindingTest do
 
       path = Pathfinding.find_reachable(grid, 1, 2)
       assert path == [
+        %Coord{x: 1, y: 2},
+        %Coord{x: 0, y: 2},
+        %Coord{x: 1, y: 1},
+        %Coord{x: 0, y: 1},
+        %Coord{x: 1, y: 0},
+        %Coord{x: 0, y: 0}
+      ]
+    end
+
+    test "avoids unstoppable_coords" do
+      grid = %Grid{
+        tiles: [
+          [1, 1, 0, 1, 1],
+          [1, 1, 0, 1, 1],
+          [1, 1, 0, 1, 1],
+          [1, 1, 0, 1, 1],
+          [1, 1, 0, 1, 1]
+        ],
+        walkable_tiles: [1]
+      }
+      |> Grid.add_unstoppable_coord(0, 3)
+      |> Grid.add_unstoppable_coord(1, 3)
+
+      path = Pathfinding.find_reachable(grid, 1, 2)
+      assert path == [
+        %Coord{x: 1, y: 4},
+        %Coord{x: 0, y: 4},
         %Coord{x: 1, y: 2},
         %Coord{x: 0, y: 2},
         %Coord{x: 1, y: 1},

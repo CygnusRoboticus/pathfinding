@@ -11,8 +11,16 @@ defmodule Pathfinding.Grid do
     extra_costs: %{},
     walkable_tiles: [],
     unwalkable_coords: %{},
+    unstoppable_coords: %{},
     tiles: []
   ]
+
+  def is_coord_stoppable(%Grid{unstoppable_coords: unstoppable_coords} = grid, x, y) do
+    case unstoppable_coords |> Map.get(y, %{}) |> Map.get(x) do
+      nil -> Grid.is_coord_walkable(grid, x, y)
+      _ -> false
+    end
+  end
 
   def is_coord_walkable(%Grid{tiles: tiles, walkable_tiles: walkable_tiles, unwalkable_coords: unwalkable_coords}, x, y) do
     tile = tiles |> Enum.at(y, []) |> Enum.at(x)
@@ -60,6 +68,16 @@ defmodule Pathfinding.Grid do
   end
   def clear_unwalkable_coords(%Grid{} = grid) do
     clear_coords(grid, :unwalkable_coords)
+  end
+
+  def add_unstoppable_coord(%Grid{unstoppable_coords: unstoppable_coords} = grid, x, y) do
+    add_coord(grid, :unstoppable_coords, unstoppable_coords, x, y)
+  end
+  def remove_unstoppable_coord(%Grid{unstoppable_coords: unstoppable_coords} = grid, x, y) do
+    remove_coord(grid, :unstoppable_coords, unstoppable_coords, x, y)
+  end
+  def clear_unstoppable_coords(%Grid{} = grid) do
+    clear_coords(grid, :unstoppable_coords)
   end
 
   def add_coord(%Grid{} = grid, key, coords, x, y, value \\ true) do

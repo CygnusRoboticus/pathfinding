@@ -4,6 +4,7 @@ defmodule Pathfinding do
   """
 
   alias Pathfinding.{
+    Coord,
     Grid,
     Node,
     Search
@@ -12,7 +13,7 @@ defmodule Pathfinding do
   def find_path(_, start_x, start_y, end_x, end_y, cost_threshold \\ nil)
   def find_path(_, start_x, start_y, end_x, end_y, _) when start_x == end_x and start_y == end_y, do: []
   def find_path(grid, start_x, start_y, end_x, end_y, cost_threshold) do
-    case Grid.is_coord_walkable(grid, end_x, end_y) do
+    case Grid.is_coord_stoppable(grid, end_x, end_y) do
       false -> nil
       true ->
         search = Search.new(start_x, start_y, end_x, end_y, cost_threshold)
@@ -50,6 +51,8 @@ defmodule Pathfinding do
 
     search
     |> Search.traversed_nodes()
+    |> Enum.filter(&(Grid.is_coord_stoppable(grid, &1.x, &1.y)))
+    |> Enum.map(&(%Coord{x: &1.x, y: &1.y}))
   end
 
   def calculate(%Search{} = search, %Grid{} = grid) do
