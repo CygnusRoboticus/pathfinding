@@ -33,7 +33,7 @@ defmodule Pathfinding do
       end
   end
 
-  def find_reachable(
+  def find_walkable(
     grid,
     x,
     y,
@@ -50,7 +50,7 @@ defmodule Pathfinding do
 
     search
     |> Search.traversed_nodes()
-    |> Enum.filter(&(Grid.is_coord_stoppable(grid, &1.x, &1.y)))
+    |> Enum.filter(&(Grid.is_coord_walkable(grid, &1.x, &1.y)))
     |> Enum.map(&(%{x: &1.x, y: &1.y}))
   end
 

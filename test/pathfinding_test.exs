@@ -238,7 +238,7 @@ defmodule PathfindingTest do
     end
   end
 
-  describe "find_reachable" do
+  describe "find_walkable" do
     test "only traverses walkable_tiles" do
       grid = %Grid{
         tiles: [
@@ -251,7 +251,7 @@ defmodule PathfindingTest do
         walkable_tiles: [1]
       }
 
-      path = Pathfinding.find_reachable(grid, 1, 2)
+      path = Pathfinding.find_walkable(grid, 1, 2)
       assert path == [
         %{x: 1, y: 2},
         %{x: 0, y: 2},
@@ -276,7 +276,7 @@ defmodule PathfindingTest do
       |> Grid.add_unwalkable_coord(0, 3)
       |> Grid.add_unwalkable_coord(1, 3)
 
-      path = Pathfinding.find_reachable(grid, 1, 2)
+      path = Pathfinding.find_walkable(grid, 1, 2)
       assert path == [
         %{x: 1, y: 2},
         %{x: 0, y: 2},
@@ -301,10 +301,12 @@ defmodule PathfindingTest do
       |> Grid.add_unstoppable_coord(0, 3)
       |> Grid.add_unstoppable_coord(1, 3)
 
-      path = Pathfinding.find_reachable(grid, 1, 2)
+      path = Pathfinding.find_walkable(grid, 1, 2)
       assert path == [
         %{x: 1, y: 4},
         %{x: 0, y: 4},
+        %{x: 1, y: 3},
+        %{x: 0, y: 3},
         %{x: 1, y: 2},
         %{x: 0, y: 2},
         %{x: 1, y: 1},
@@ -326,7 +328,7 @@ defmodule PathfindingTest do
         walkable_tiles: [1]
       }
 
-      path = Pathfinding.find_reachable(grid, 1, 2, 1)
+      path = Pathfinding.find_walkable(grid, 1, 2, 1)
       assert path == [
         %{x: 1, y: 3},
         %{x: 1, y: 2},
@@ -334,7 +336,7 @@ defmodule PathfindingTest do
         %{x: 1, y: 1}
       ]
 
-      path = Pathfinding.find_reachable(grid, 1, 2, 4)
+      path = Pathfinding.find_walkable(grid, 1, 2, 4)
       assert path == [
         %{x: 3, y: 4},
         %{x: 2, y: 4},
