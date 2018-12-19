@@ -28,6 +28,28 @@ defmodule PathfindingTest do
       ]
     end
 
+    test "works with charlists" do
+      grid = %Grid{
+        tiles: [
+          '""\r""',
+          '""\r"',
+          '""\r""',
+          '"""""',
+          '"""""'
+        ],
+        walkable_tiles: [34]
+      }
+
+      path = Pathfinding.find_path(grid, 1, 2, 3, 2)
+      assert path == [
+        %{x: 1, y: 2},
+        %{x: 1, y: 3},
+        %{x: 2, y: 3},
+        %{x: 3, y: 3},
+        %{x: 3, y: 2}
+      ]
+    end
+
     test "avoids unwalkable_coords" do
       grid = %Grid{
         tiles: [
@@ -355,6 +377,40 @@ defmodule PathfindingTest do
         %{x: 1, y: 0},
         %{x: 0, y: 0}
       ]
+    end
+
+    test "reports the start square when cost_threshold = 0" do
+      grid = %Grid{
+        tiles: [
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1]
+        ],
+        walkable_tiles: [1]
+      }
+
+      path = Pathfinding.find_walkable(grid, 1, 2, 0)
+      assert path == [
+        %{x: 1, y: 2},
+      ]
+    end
+
+    test "doesn't report own tile when it is not walkable" do
+      grid = %Grid{
+        tiles: [
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1]
+        ],
+        walkable_tiles: []
+      }
+
+      path = Pathfinding.find_walkable(grid, 1, 2, 4)
+      assert path == []
     end
   end
 end
