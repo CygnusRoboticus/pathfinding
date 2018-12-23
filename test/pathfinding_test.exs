@@ -258,6 +258,50 @@ defmodule PathfindingTest do
         %{x: 3, y: 2}
       ]
     end
+
+    test "it navigates hex grids" do
+      grid = %Grid{
+        tiles: [
+          [1, 1, 0, 1, 1],
+          [1, 1, 0, 1, 1],
+          [1, 0, 1, 0, 1],
+          [1, 1, 0, 1, 1],
+          [1, 1, 1, 1, 1]
+        ],
+        walkable_tiles: [1],
+        type: :hex
+      }
+
+      path = Pathfinding.find_path(grid, 1, 1, 2, 2)
+      assert path == [
+        %{x: 1, y: 1},
+        %{x: 0, y: 2},
+        %{x: 0, y: 3},
+        %{x: 1, y: 3},
+        %{x: 2, y: 2}
+      ]
+    end
+
+    test "it navigates intercardinal grids" do
+      grid = %Grid{
+        tiles: [
+          [1, 1, 0, 1, 1],
+          [1, 1, 0, 1, 1],
+          [1, 0, 1, 0, 1],
+          [1, 1, 0, 1, 1],
+          [1, 1, 1, 1, 1]
+        ],
+        walkable_tiles: [1],
+        type: :intercardinal
+      }
+
+      path = Pathfinding.find_path(grid, 1, 1, 3, 3)
+      assert path == [
+        %{x: 1, y: 1},
+        %{x: 2, y: 2},
+        %{x: 3, y: 3}
+      ]
+    end
   end
 
   describe "find_walkable" do
@@ -466,6 +510,50 @@ defmodule PathfindingTest do
 
       path = Pathfinding.find_walkable(grid, %{x: 1, y: 2}, 4)
       assert path == []
+    end
+
+    test "it navigates hex grids" do
+      grid = %Grid{
+        tiles: [
+          [1, 0, 1, 0, 1],
+          [0, 1, 0, 0, 1],
+          [1, 0, 1, 0, 1],
+          [0, 1, 0, 0, 1],
+          [1, 1, 0, 1, 1]
+        ],
+        walkable_tiles: [1],
+        type: :hex
+      }
+
+      path = Pathfinding.find_walkable(grid, %{x: 1, y: 1})
+      assert path == [
+        %{x: 0, y: 2},
+        %{x: 1, y: 1},
+        %{x: 2, y: 0}
+      ]
+    end
+
+    test "it navigates intercardinal grids" do
+      grid = %Grid{
+        tiles: [
+          [1, 0, 0, 0, 0],
+          [0, 1, 0, 0, 0],
+          [0, 1, 0, 0, 0],
+          [1, 0, 0, 0, 0],
+          [0, 1, 0, 0, 0]
+        ],
+        walkable_tiles: [1],
+        type: :intercardinal
+      }
+
+      path = Pathfinding.find_walkable(grid, %{x: 1, y: 1})
+      assert path == [
+        %{x: 1, y: 4},
+        %{x: 0, y: 3},
+        %{x: 1, y: 2},
+        %{x: 1, y: 1},
+        %{x: 0, y: 0}
+      ]
     end
   end
 end

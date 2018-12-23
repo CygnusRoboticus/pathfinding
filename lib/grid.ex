@@ -12,17 +12,35 @@ defmodule Pathfinding.Grid do
     walkable_tiles: [],
     unwalkable_coords: %{},
     unstoppable_coords: %{},
-    tiles: []
+    tiles: [],
+    type: :cardinal #:hex, :intercardinal
   ]
 
-  def is_coord_stoppable(%Grid{unstoppable_coords: unstoppable_coords} = grid, x, y) do
+  def is_cardinal?(%Grid{type: :cardinal}), do: true
+  def is_cardinal?(%Grid{}), do: false
+  def is_hex?(%Grid{type: :hex}), do: true
+  def is_hex?(%Grid{}), do: false
+  def is_intercardinal?(%Grid{type: :intercardinal}), do: true
+  def is_intercardinal?(%Grid{}), do: false
+
+  def in_grid?(%Grid{}, x, y) when x < 0 or y < 0, do: false
+  def in_grid?(%Grid{tiles: tiles}, x, y) do
+    case y < length(tiles) do
+      false -> true
+      true ->
+        row = Enum.at(tiles, y)
+        x < length(row)
+    end
+  end
+
+  def is_coord_stoppable?(%Grid{unstoppable_coords: unstoppable_coords} = grid, x, y) do
     case unstoppable_coords |> Map.get(y, %{}) |> Map.get(x) do
-      nil -> Grid.is_coord_walkable(grid, x, y)
+      nil -> Grid.is_coord_walkable?(grid, x, y)
       _ -> false
     end
   end
 
-  def is_coord_walkable(%Grid{tiles: tiles, walkable_tiles: walkable_tiles, unwalkable_coords: unwalkable_coords}, x, y) do
+  def is_coord_walkable?(%Grid{tiles: tiles, walkable_tiles: walkable_tiles, unwalkable_coords: unwalkable_coords}, x, y) do
     tile = tiles |> Enum.at(y, []) |> Enum.at(x)
     case unwalkable_coords |> Map.get(y, %{}) |> Map.get(x) do
       nil -> Enum.member?(walkable_tiles, tile)

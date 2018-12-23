@@ -12,7 +12,7 @@ defmodule Pathfinding do
   def find_path(_, start_x, start_y, end_x, end_y, cost_threshold \\ nil)
   def find_path(_, start_x, start_y, end_x, end_y, _) when start_x == end_x and start_y == end_y, do: []
   def find_path(grid, start_x, start_y, end_x, end_y, cost_threshold) do
-    case Grid.is_coord_stoppable(grid, end_x, end_y) do
+    case Grid.is_coord_stoppable?(grid, end_x, end_y) do
       false -> nil
       true ->
         search = Search.new(start_x, start_y, end_x, end_y, cost_threshold)
@@ -53,7 +53,7 @@ defmodule Pathfinding do
 
     search
     |> Search.traversed_nodes()
-    |> Enum.filter(&(Grid.is_coord_walkable(grid, &1.x, &1.y)))
+    |> Enum.filter(&(Grid.is_coord_walkable?(grid, &1.x, &1.y)))
     |> Enum.map(&(%{x: &1.x, y: &1.y}))
   end
 
@@ -67,21 +67,45 @@ defmodule Pathfinding do
           node = node |> Map.put(:visited, true)
           search = search |> Search.cache(node)
 
-          search = case node.y > 0 do
+          #:cardinal
+          search = case Grid.in_grid?(grid, node.x, node.y - 1) do
             false -> search
             true -> Pathfinding.check_adjacent_node(search, grid, node, 0, -1)
           end
-          search = case node.x < length(Enum.at(grid.tiles, node.y)) - 1 do
+          #:hex & :intercardinal
+          search = case !Grid.is_cardinal?(grid) && Grid.in_grid?(grid, node.x + 1, node.y - 1) do
+            false -> search
+            true -> Pathfinding.check_adjacent_node(search, grid, node, 1, -1)
+          end
+          #:cardinal
+          search = case Grid.in_grid?(grid, node.x + 1, node.y) do
             false -> search
             true -> Pathfinding.check_adjacent_node(search, grid, node, 1, 0)
           end
-          search = case node.y < length(grid.tiles) - 1 do
+          #:intercardinal
+          search = case Grid.is_intercardinal?(grid) && Grid.in_grid?(grid, node.x + 1, node.y + 1) do
+            false -> search
+            true -> Pathfinding.check_adjacent_node(search, grid, node, 1, 1)
+          end
+          #:cardinal
+          search = case Grid.in_grid?(grid, node.x, node.y + 1) do
             false -> search
             true -> Pathfinding.check_adjacent_node(search, grid, node, 0, 1)
           end
-          search = case node.x > 0 do
+          #:hex & :intercardinal
+          search = case !Grid.is_cardinal?(grid) && Grid.in_grid?(grid, node.x - 1, node.y + 1) do
+            false -> search
+            true -> Pathfinding.check_adjacent_node(search, grid, node, -1, 1)
+          end
+          #:cardinal
+          search = case Grid.in_grid?(grid, node.x - 1, node.y) do
             false -> search
             true -> Pathfinding.check_adjacent_node(search, grid, node, -1, 0)
+          end
+          #:intercardinal
+          search = case Grid.is_intercardinal?(grid) && Grid.in_grid?(grid, node.x - 1, node.y - 1) do
+            false -> search
+            true -> Pathfinding.check_adjacent_node(search, grid, node, -1, -1)
           end
 
           Pathfinding.calculate(search, grid)
@@ -104,7 +128,7 @@ defmodule Pathfinding do
     adjacent_cost = Grid.get_coord_cost(grid, adjacent_x, adjacent_y)
 
     case (
-      Grid.is_coord_walkable(grid, adjacent_x, adjacent_y) &&
+      Grid.is_coord_walkable?(grid, adjacent_x, adjacent_y) &&
       Pathfinding.can_afford(source_node, adjacent_cost, search.cost_threshold)
     ) do
       false -> search
