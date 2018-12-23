@@ -273,12 +273,67 @@ defmodule PathfindingTest do
         walkable_tiles: [1]
       }
 
-      path = Pathfinding.find_walkable(grid, 1, 2)
+      path = Pathfinding.find_walkable(grid, %{x: 1, y: 2})
       assert path == [
         %{x: 1, y: 2},
         %{x: 0, y: 2},
         %{x: 1, y: 1},
         %{x: 0, y: 1},
+        %{x: 1, y: 0},
+        %{x: 0, y: 0}
+      ]
+    end
+
+    test "accepts an alternative input" do
+      grid = %Grid{
+        tiles: [
+          [1, 1, 0, 1, 1],
+          [1, 1, 0, 1, 1],
+          [1, 1, 0, 1, 1],
+          [2, 2, 1, 1, 1],
+          [1, 1, 1, 1, 1]
+        ],
+        walkable_tiles: [1]
+      }
+
+      path = Pathfinding.find_walkable(grid, %{x: 1, y: 2})
+      assert path == [
+        %{x: 1, y: 2},
+        %{x: 0, y: 2},
+        %{x: 1, y: 1},
+        %{x: 0, y: 1},
+        %{x: 1, y: 0},
+        %{x: 0, y: 0}
+      ]
+    end
+
+    test "searches from multiple sources" do
+      grid = %Grid{
+        tiles: [
+          [1, 1, 0, 1, 1],
+          [1, 1, 0, 1, 1],
+          [1, 1, 0, 1, 1],
+          [2, 2, 2, 2, 2],
+          [1, 1, 1, 1, 1]
+        ],
+        walkable_tiles: [1]
+      }
+
+      path = Pathfinding.find_walkable(grid, [
+        %{x: 1, y: 2},
+        %{x: 4, y: 2}
+      ])
+      assert path == [
+        %{y: 2, x: 4},
+        %{y: 2, x: 3},
+        %{x: 1, y: 2},
+        %{x: 0, y: 2},
+        %{x: 4, y: 1},
+        %{x: 3, y: 1},
+        %{x: 1, y: 1},
+        %{x: 0, y: 1},
+        %{x: 4, y: 0},
+        %{x: 3, y: 0},
         %{x: 1, y: 0},
         %{x: 0, y: 0}
       ]
@@ -298,7 +353,7 @@ defmodule PathfindingTest do
       |> Grid.add_unwalkable_coord(0, 3)
       |> Grid.add_unwalkable_coord(1, 3)
 
-      path = Pathfinding.find_walkable(grid, 1, 2)
+      path = Pathfinding.find_walkable(grid, %{x: 1, y: 2})
       assert path == [
         %{x: 1, y: 2},
         %{x: 0, y: 2},
@@ -323,7 +378,7 @@ defmodule PathfindingTest do
       |> Grid.add_unstoppable_coord(0, 3)
       |> Grid.add_unstoppable_coord(1, 3)
 
-      path = Pathfinding.find_walkable(grid, 1, 2)
+      path = Pathfinding.find_walkable(grid, %{x: 1, y: 2})
       assert path == [
         %{x: 1, y: 4},
         %{x: 0, y: 4},
@@ -350,7 +405,7 @@ defmodule PathfindingTest do
         walkable_tiles: [1]
       }
 
-      path = Pathfinding.find_walkable(grid, 1, 2, 1)
+      path = Pathfinding.find_walkable(grid, %{x: 1, y: 2}, 1)
       assert path == [
         %{x: 1, y: 3},
         %{x: 1, y: 2},
@@ -358,7 +413,7 @@ defmodule PathfindingTest do
         %{x: 1, y: 1}
       ]
 
-      path = Pathfinding.find_walkable(grid, 1, 2, 4)
+      path = Pathfinding.find_walkable(grid, %{x: 1, y: 2}, 4)
       assert path == [
         %{x: 3, y: 4},
         %{x: 2, y: 4},
@@ -391,7 +446,7 @@ defmodule PathfindingTest do
         walkable_tiles: [1]
       }
 
-      path = Pathfinding.find_walkable(grid, 1, 2, 0)
+      path = Pathfinding.find_walkable(grid, %{x: 1, y: 2}, 0)
       assert path == [
         %{x: 1, y: 2},
       ]
@@ -409,7 +464,7 @@ defmodule PathfindingTest do
         walkable_tiles: []
       }
 
-      path = Pathfinding.find_walkable(grid, 1, 2, 4)
+      path = Pathfinding.find_walkable(grid, %{x: 1, y: 2}, 4)
       assert path == []
     end
   end

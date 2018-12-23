@@ -33,19 +33,22 @@ defmodule Pathfinding do
       end
   end
 
-  def find_walkable(
-    grid,
-    x,
-    y,
-    cost_threshold \\ nil
-  ) do
+  def find_walkable(_, _, cost_threshold \\ nil)
+  def find_walkable(grid, %{x: _, y: _} = coord, cost_threshold) do
+    find_walkable(grid, [coord], cost_threshold)
+  end
+  def find_walkable(grid, coords, cost_threshold) when is_list(coords) do
+    %{x: x, y: y} = List.first(coords)
     search = Search.new(x, y, cost_threshold)
-    start_node =
-      search
-      |> Pathfinding.coordinate_to_node(nil, x, y, 0)
+    nodes =
+      coords
+      |> Enum.map(fn(%{x: x, y: y}) ->
+        Pathfinding.coordinate_to_node(search, nil, x, y, 0)
+      end)
+
     search =
-      search
-      |> Search.push(start_node)
+      nodes
+      |> Enum.reduce(search, &(Search.push(&2, &1)))
       |> Pathfinding.calculate(grid)
 
     search
