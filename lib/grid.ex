@@ -48,6 +48,19 @@ defmodule Pathfinding.Grid do
     end
   end
 
+  def to_coord_map(coords, map \\ %{}, value \\ true) when is_list(coords) do
+    coords
+    |> Enum.reduce(map, fn(%{x: x, y: y}, coord_map) ->
+      coord_map
+      |> Map.put(
+        y,
+        coord_map
+        |> Map.get(y, %{})
+        |> Map.put(x, value)
+      )
+    end)
+  end
+
   def get_coord_cost(%Grid{tiles: tiles, costs: costs} = grid, x, y) do
     case Grid.get_extra_cost(grid, x, y) do
       nil ->
