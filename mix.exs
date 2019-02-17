@@ -1,29 +1,44 @@
 defmodule Pathfinding.MixProject do
   use Mix.Project
 
+  @version "0.1.0"
+  @url "https://github.com/CygnusRoboticus/pathfinding"
+
   def project do
     [
+      name: "Pathfinding",
       app: :pathfinding,
-      version: "0.1.0",
+      version: @version,
       elixir: "~> 1.7",
+      build_embedded: Mix.env() === :prod,
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      description: "Tile-based A* Pathfinding",
+      package: package(),
+      deps: deps(),
+      source_url: @url,
+      homepage_url: @url
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
   def application do
     [
       extra_applications: [:logger]
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
+  defp package do
+    [
+      files: ~w(lib LICENSE mix.exs README.md),
+      licenses: ["MIT"],
+      links: %{"github" => @url}
+    ]
+  end
+
   defp deps do
     [
-      {:heap, "~> 2.0"}
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
+      {:heap, "~> 2.0"},
+      {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false},
+      {:ex_doc, ">= 0.0.0", only: :dev}
     ]
   end
 end

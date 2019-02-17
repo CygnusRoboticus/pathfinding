@@ -15,12 +15,15 @@ defmodule Pathfinding.Node do
   end
 
   def format_path(%Node{} = node) do
-    format_collection([node], node)
-    |> Enum.map(fn(node) ->
+    [node]
+    |> format_collection(node)
+    |> Enum.map(fn node ->
       %{x: node.x, y: node.y}
     end)
   end
+
   defp format_collection(collection, %{parent: nil}), do: collection
+
   defp format_collection(collection, %{parent: parent}) do
     format_collection([parent | collection], parent)
   end

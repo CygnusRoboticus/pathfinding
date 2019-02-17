@@ -30,16 +30,17 @@ defmodule Pathfinding.Search do
       end_x: end_x,
       end_y: end_y,
       cost_threshold: cost_threshold,
-      heap: Heap.new(fn(a, b) ->
-        Node.guess_total_cost(a) < Node.guess_total_cost(b)
-      end)
+      heap:
+        Heap.new(fn a, b ->
+          Node.guess_total_cost(a) < Node.guess_total_cost(b)
+        end)
     }
   end
 
   def push(%Search{heap: heap} = search, node) do
     %Search{
-      Search.cache(search, node) |
-      heap: Heap.push(heap, node)
+      Search.cache(search, node)
+      | heap: Heap.push(heap, node)
     }
   end
 
@@ -63,7 +64,7 @@ defmodule Pathfinding.Search do
   def traversed_nodes(%Search{cache: cache}) do
     cache
     |> Map.values()
-    |> Enum.reduce([], fn(map, collection) ->
+    |> Enum.reduce([], fn map, collection ->
       collection ++ Map.values(map)
     end)
     |> Enum.reverse()
@@ -71,6 +72,7 @@ defmodule Pathfinding.Search do
 
   def cache(%Search{cache: cache} = search, %{x: x, y: y} = node) do
     nested_cache = cache |> Map.get(y, %{})
+
     cache =
       cache
       |> Map.put(y, Map.put(nested_cache, x, node))
