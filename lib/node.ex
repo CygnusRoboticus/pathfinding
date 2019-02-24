@@ -18,7 +18,7 @@ defmodule Pathfinding.Node do
     [node]
     |> format_collection(node)
     |> Enum.map(fn node ->
-      %{x: node.x, y: node.y}
+      %Coord{x: node.x, y: node.y}
     end)
   end
 

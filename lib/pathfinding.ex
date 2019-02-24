@@ -1,14 +1,21 @@
 defmodule Pathfinding do
   @moduledoc """
-  Simple pathfinding module
+  This module is the entry point to access the more important `Pathfinding.Grid` and provides the search methods used against a Grid struct.
   """
 
   alias Pathfinding.{
+    Coord,
     Grid,
     Node,
     Search
   }
 
+  @doc """
+  Returns the path from one coordinate to another.
+
+  A `cost_threshold` can be provided if the search should terminate early, such as being restricted by movement distance.
+  """
+  @spec find_path(Pathfinding.Grid.t, Number.t, Number.t, Number.t, Number.t) :: [Coord.t, ...]
   def find_path(_, start_x, start_y, end_x, end_y, cost_threshold \\ nil)
 
   def find_path(_, start_x, start_y, end_x, end_y, _) when start_x == end_x and start_y == end_y,
@@ -24,12 +31,12 @@ defmodule Pathfinding do
 
         start_node =
           search
-          |> Pathfinding.coordinate_to_node(nil, start_x, start_y, 0)
+          |> coordinate_to_node(nil, start_x, start_y, 0)
 
         search =
           search
           |> Search.push(start_node)
-          |> Pathfinding.calculate(grid)
+          |> calculate(grid)
 
         case Search.pop(search) do
           {nil, _} ->
@@ -42,6 +49,12 @@ defmodule Pathfinding do
     end
   end
 
+  @doc """
+  Returns the 'walkable' coordinates within the grid from a specified coordinate. If a list of coordinate is provided, a search will be executed starting from each coordinate.
+
+  A `cost_threshold` can be provided if the search should terminate early, such as being restricted by movement distance.
+  """
+  @spec find_walkable(Pathfinding.Grid.t, %{x: Number.t, y: Number.t} | [%{x: Number.t, y: Number.t}, ...]) :: [Coord.t, ...]
   def find_walkable(_, _, cost_threshold \\ nil)
 
   def find_walkable(grid, %{x: _, y: _} = coord, cost_threshold) do
@@ -55,13 +68,13 @@ defmodule Pathfinding do
     nodes =
       coords
       |> Enum.map(fn %{x: x, y: y} ->
-        Pathfinding.coordinate_to_node(search, nil, x, y, 0)
+        coordinate_to_node(search, nil, x, y, 0)
       end)
 
     search =
       nodes
       |> Enum.reduce(search, &Search.push(&2, &1))
-      |> Pathfinding.calculate(grid)
+      |> calculate(grid)
 
     search
     |> Search.traversed_nodes()
@@ -69,7 +82,7 @@ defmodule Pathfinding do
     |> Enum.map(&%{x: &1.x, y: &1.y})
   end
 
-  def calculate(%Search{} = search, %Grid{} = grid) do
+  defp calculate(%Search{} = search, %Grid{} = grid) do
     case Search.size(search) do
       0 ->
         search
@@ -88,59 +101,59 @@ defmodule Pathfinding do
             search =
               case Grid.in_grid?(grid, node.x, node.y - 1) do
                 false -> search
-                true -> Pathfinding.check_adjacent_node(search, grid, node, 0, -1)
+                true -> check_adjacent_node(search, grid, node, 0, -1)
               end
 
             # :hex & :intercardinal
             search =
               case !Grid.is_cardinal?(grid) && Grid.in_grid?(grid, node.x + 1, node.y - 1) do
                 false -> search
-                true -> Pathfinding.check_adjacent_node(search, grid, node, 1, -1)
+                true -> check_adjacent_node(search, grid, node, 1, -1)
               end
 
             # :cardinal
             search =
               case Grid.in_grid?(grid, node.x + 1, node.y) do
                 false -> search
-                true -> Pathfinding.check_adjacent_node(search, grid, node, 1, 0)
+                true -> check_adjacent_node(search, grid, node, 1, 0)
               end
 
             # :intercardinal
             search =
               case Grid.is_intercardinal?(grid) && Grid.in_grid?(grid, node.x + 1, node.y + 1) do
                 false -> search
-                true -> Pathfinding.check_adjacent_node(search, grid, node, 1, 1)
+                true -> check_adjacent_node(search, grid, node, 1, 1)
               end
 
             # :cardinal
             search =
               case Grid.in_grid?(grid, node.x, node.y + 1) do
                 false -> search
-                true -> Pathfinding.check_adjacent_node(search, grid, node, 0, 1)
+                true -> check_adjacent_node(search, grid, node, 0, 1)
               end
 
             # :hex & :intercardinal
             search =
               case !Grid.is_cardinal?(grid) && Grid.in_grid?(grid, node.x - 1, node.y + 1) do
                 false -> search
-                true -> Pathfinding.check_adjacent_node(search, grid, node, -1, 1)
+                true -> check_adjacent_node(search, grid, node, -1, 1)
               end
 
             # :cardinal
             search =
               case Grid.in_grid?(grid, node.x - 1, node.y) do
                 false -> search
-                true -> Pathfinding.check_adjacent_node(search, grid, node, -1, 0)
+                true -> check_adjacent_node(search, grid, node, -1, 0)
               end
 
             # :intercardinal
             search =
               case Grid.is_intercardinal?(grid) && Grid.in_grid?(grid, node.x - 1, node.y - 1) do
                 false -> search
-                true -> Pathfinding.check_adjacent_node(search, grid, node, -1, -1)
+                true -> check_adjacent_node(search, grid, node, -1, -1)
               end
 
-            Pathfinding.calculate(search, grid)
+            calculate(search, grid)
         end
     end
   end
@@ -149,7 +162,7 @@ defmodule Pathfinding do
     end_x == x && end_y == y
   end
 
-  def check_adjacent_node(
+  defp check_adjacent_node(
         %Search{} = search,
         %Grid{} = grid,
         source_node,
@@ -161,14 +174,14 @@ defmodule Pathfinding do
     adjacent_cost = Grid.get_coord_cost(grid, adjacent_x, adjacent_y)
 
     case Grid.is_coord_walkable?(grid, adjacent_x, adjacent_y) &&
-           Pathfinding.can_afford(source_node, adjacent_cost, search.cost_threshold) do
+           can_afford(source_node, adjacent_cost, search.cost_threshold) do
       false ->
         search
 
       true ->
         adjacent_node =
           search
-          |> Pathfinding.coordinate_to_node(
+          |> coordinate_to_node(
             source_node,
             adjacent_x,
             adjacent_y,
@@ -202,13 +215,13 @@ defmodule Pathfinding do
     end
   end
 
-  def can_afford(_, _, nil), do: true
+  defp can_afford(_, _, nil), do: true
 
-  def can_afford(source_node, cost, cost_threshold) do
+  defp can_afford(source_node, cost, cost_threshold) do
     source_node.cost + cost <= cost_threshold
   end
 
-  def coordinate_to_node(
+  defp coordinate_to_node(
         search,
         parent,
         x,
@@ -223,7 +236,7 @@ defmodule Pathfinding do
         distance =
           case is_nil(search.end_x) && is_nil(search.end_y) do
             true -> 1
-            false -> Pathfinding.get_distance(x, y, search.end_x, search.end_y)
+            false -> get_distance(x, y, search.end_x, search.end_y)
           end
 
         %Node{
@@ -240,7 +253,7 @@ defmodule Pathfinding do
     end
   end
 
-  def get_distance(x1, y1, x2, y2) do
+  defp get_distance(x1, y1, x2, y2) do
     dx = abs(x1 - x2)
     dy = abs(y1 - y2)
     dx + dy
