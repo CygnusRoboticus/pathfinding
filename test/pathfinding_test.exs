@@ -22,13 +22,13 @@ defmodule PathfindingTest do
 
       path = Pathfinding.find_path(grid, 1, 2, 3, 2)
 
-      assert path == [
+      assert [
                %{x: 1, y: 2},
                %{x: 1, y: 3},
                %{x: 2, y: 3},
                %{x: 3, y: 3},
                %{x: 3, y: 2}
-             ]
+             ] = path
     end
 
     test "works with charlists" do
@@ -45,13 +45,13 @@ defmodule PathfindingTest do
 
       path = Pathfinding.find_path(grid, 1, 2, 3, 2)
 
-      assert path == [
+      assert [
                %{x: 1, y: 2},
                %{x: 1, y: 3},
                %{x: 2, y: 3},
                %{x: 3, y: 3},
                %{x: 3, y: 2}
-             ]
+             ] = path
     end
 
     test "avoids unwalkable_coords" do
@@ -71,7 +71,7 @@ defmodule PathfindingTest do
 
       path = Pathfinding.find_path(grid, 1, 2, 3, 2)
 
-      assert path == [
+      assert [
                %{x: 1, y: 2},
                %{x: 1, y: 3},
                %{x: 1, y: 4},
@@ -81,7 +81,7 @@ defmodule PathfindingTest do
                %{x: 4, y: 3},
                %{x: 4, y: 2},
                %{x: 3, y: 2}
-             ]
+             ] = path
     end
 
     test "early returns when start === end" do
@@ -97,7 +97,7 @@ defmodule PathfindingTest do
       }
 
       path = Pathfinding.find_path(grid, 1, 2, 1, 2)
-      assert path == []
+      assert [] = path
     end
 
     test "returns nil when it cannot find a path" do
@@ -182,13 +182,13 @@ defmodule PathfindingTest do
 
       path = Pathfinding.find_path(grid, 0, 2, 4, 2)
 
-      assert path == [
+      assert [
                %{x: 0, y: 2},
                %{x: 1, y: 2},
                %{x: 2, y: 2},
                %{x: 3, y: 2},
                %{x: 4, y: 2}
-             ]
+             ] = path
     end
 
     test "respects costs" do
@@ -207,7 +207,7 @@ defmodule PathfindingTest do
 
       path = Pathfinding.find_path(grid, 0, 2, 4, 2)
 
-      assert path == [
+      assert [
                %{x: 0, y: 2},
                %{x: 0, y: 3},
                %{x: 1, y: 3},
@@ -215,7 +215,7 @@ defmodule PathfindingTest do
                %{x: 3, y: 3},
                %{x: 4, y: 3},
                %{x: 4, y: 2}
-             ]
+             ] = path
     end
 
     test "respects extraCosts" do
@@ -235,7 +235,7 @@ defmodule PathfindingTest do
 
       path = Pathfinding.find_path(grid, 0, 2, 4, 2)
 
-      assert path == [
+      assert [
                %{x: 0, y: 2},
                %{x: 0, y: 3},
                %{x: 0, y: 4},
@@ -245,7 +245,7 @@ defmodule PathfindingTest do
                %{x: 3, y: 3},
                %{x: 4, y: 3},
                %{x: 4, y: 2}
-             ]
+             ] = path
     end
 
     test "cancels early with cost_threshold" do
@@ -264,13 +264,13 @@ defmodule PathfindingTest do
       assert is_nil(path)
       path = Pathfinding.find_path(grid, 1, 2, 3, 2, 4)
 
-      assert path == [
+      assert [
                %{x: 1, y: 2},
                %{x: 1, y: 3},
                %{x: 2, y: 3},
                %{x: 3, y: 3},
                %{x: 3, y: 2}
-             ]
+             ] = path
     end
 
     test "it navigates hex grids" do
@@ -288,13 +288,13 @@ defmodule PathfindingTest do
 
       path = Pathfinding.find_path(grid, 1, 1, 2, 2)
 
-      assert path == [
+      assert [
                %{x: 1, y: 1},
                %{x: 0, y: 2},
                %{x: 0, y: 3},
                %{x: 1, y: 3},
                %{x: 2, y: 2}
-             ]
+             ] = path
     end
 
     test "it navigates intercardinal grids" do
@@ -312,11 +312,11 @@ defmodule PathfindingTest do
 
       path = Pathfinding.find_path(grid, 1, 1, 3, 3)
 
-      assert path == [
+      assert [
                %{x: 1, y: 1},
                %{x: 2, y: 2},
                %{x: 3, y: 3}
-             ]
+             ] = path
     end
   end
 
@@ -335,14 +335,14 @@ defmodule PathfindingTest do
 
       path = Pathfinding.find_walkable(grid, %{x: 1, y: 2})
 
-      assert path == [
+      assert [
                %{x: 1, y: 2},
                %{x: 0, y: 2},
                %{x: 1, y: 1},
                %{x: 0, y: 1},
                %{x: 1, y: 0},
                %{x: 0, y: 0}
-             ]
+             ] = path
     end
 
     test "accepts an alternative input" do
@@ -359,14 +359,14 @@ defmodule PathfindingTest do
 
       path = Pathfinding.find_walkable(grid, %{x: 1, y: 2})
 
-      assert path == [
+      assert [
                %{x: 1, y: 2},
                %{x: 0, y: 2},
                %{x: 1, y: 1},
                %{x: 0, y: 1},
                %{x: 1, y: 0},
                %{x: 0, y: 0}
-             ]
+             ] = path
     end
 
     test "searches from multiple sources" do
@@ -387,7 +387,7 @@ defmodule PathfindingTest do
           %{x: 4, y: 2}
         ])
 
-      assert path == [
+      assert [
                %{x: 4, y: 2},
                %{x: 3, y: 2},
                %{x: 1, y: 2},
@@ -400,7 +400,7 @@ defmodule PathfindingTest do
                %{x: 3, y: 0},
                %{x: 1, y: 0},
                %{x: 0, y: 0}
-             ]
+             ] = path
     end
 
     test "avoids unwalkable_coords" do
@@ -420,14 +420,14 @@ defmodule PathfindingTest do
 
       path = Pathfinding.find_walkable(grid, %{x: 1, y: 2})
 
-      assert path == [
+      assert [
                %{x: 1, y: 2},
                %{x: 0, y: 2},
                %{x: 1, y: 1},
                %{x: 0, y: 1},
                %{x: 1, y: 0},
                %{x: 0, y: 0}
-             ]
+             ] = path
     end
 
     test "avoids unstoppable_coords" do
@@ -447,7 +447,7 @@ defmodule PathfindingTest do
 
       path = Pathfinding.find_walkable(grid, %{x: 1, y: 2})
 
-      assert path == [
+      assert [
                %{x: 1, y: 4},
                %{x: 0, y: 4},
                %{x: 1, y: 3},
@@ -458,7 +458,7 @@ defmodule PathfindingTest do
                %{x: 0, y: 1},
                %{x: 1, y: 0},
                %{x: 0, y: 0}
-             ]
+             ] = path
     end
 
     test "cancels early with cost_threshold" do
@@ -475,16 +475,16 @@ defmodule PathfindingTest do
 
       path = Pathfinding.find_walkable(grid, %{x: 1, y: 2}, 1)
 
-      assert path == [
+      assert [
                %{x: 1, y: 3},
                %{x: 1, y: 2},
                %{x: 0, y: 2},
                %{x: 1, y: 1}
-             ]
+             ] = path
 
       path = Pathfinding.find_walkable(grid, %{x: 1, y: 2}, 4)
 
-      assert path == [
+      assert [
                %{x: 3, y: 4},
                %{x: 2, y: 4},
                %{x: 1, y: 4},
@@ -501,7 +501,7 @@ defmodule PathfindingTest do
                %{x: 0, y: 1},
                %{x: 1, y: 0},
                %{x: 0, y: 0}
-             ]
+             ] = path
     end
 
     test "reports the start square when cost_threshold = 0" do
@@ -518,9 +518,9 @@ defmodule PathfindingTest do
 
       path = Pathfinding.find_walkable(grid, %{x: 1, y: 2}, 0)
 
-      assert path == [
+      assert [
                %{x: 1, y: 2}
-             ]
+             ] = path
     end
 
     test "doesn't report own tile when it is not walkable" do
@@ -536,7 +536,7 @@ defmodule PathfindingTest do
       }
 
       path = Pathfinding.find_walkable(grid, %{x: 1, y: 2}, 4)
-      assert path == []
+      assert [] = path
     end
 
     test "it navigates hex grids" do
@@ -554,11 +554,11 @@ defmodule PathfindingTest do
 
       path = Pathfinding.find_walkable(grid, %{x: 1, y: 1})
 
-      assert path == [
+      assert [
                %{x: 0, y: 2},
                %{x: 1, y: 1},
                %{x: 2, y: 0}
-             ]
+             ] = path
     end
 
     test "it navigates intercardinal grids" do
@@ -576,13 +576,13 @@ defmodule PathfindingTest do
 
       path = Pathfinding.find_walkable(grid, %{x: 1, y: 1})
 
-      assert path == [
+      assert [
                %{x: 1, y: 4},
                %{x: 0, y: 3},
                %{x: 1, y: 2},
                %{x: 1, y: 1},
                %{x: 0, y: 0}
-             ]
+             ] = path
     end
   end
 end

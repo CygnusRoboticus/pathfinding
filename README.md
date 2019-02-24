@@ -15,7 +15,7 @@ def deps do
 end
 ```
 
-## Usage
+## Basic Usage
 
 ```elixir
 grid = %Pathfinding.Grid{
