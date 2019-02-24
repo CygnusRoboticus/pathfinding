@@ -1,6 +1,6 @@
 # Pathfinding
 
-Pathfinding is a simple package for performing 2d [A-star](https://en.wikipedia.org/wiki/A*_search_algorithm) pathfinding in square- and hex-based tile grids.
+Pathfinding is a simple package for performing 2D [A-star](https://en.wikipedia.org/wiki/A*_search_algorithm) pathfinding in square- and hex-based tile grids.
 
 ## Installation
 
